@@ -816,7 +816,7 @@ int main() {
                         break;
                     }
 
-                    // 3. Использование зелья из 4-го слота (индекс 3)
+                    // 3.  Использование зелья из 4-го слота (индекс 3)
                     if (!heroes[i].equipment[3].name.empty() &&
                         heroes[i].equipment[3].type == Potion) {
                         cout << heroes[i].name << " имеет зелье в 4-м слоте. Выпить? (1 - да, 0 - нет): ";
