@@ -347,7 +347,7 @@ int main() {
     heroes.push_back(mage);
 
     // хтонь
-    enemyCount = 2;
+    enemyCount = 4;
     enemies = new Enemy[enemyCount];
 
     enemies[0] = { "Гоблин", 100, 15 };
