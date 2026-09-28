@@ -12,9 +12,6 @@
 #include <Windows.h>
 #endif
 
-/// <summary>
-/// установка русского языка в консоли
-/// </summary>
 void setupRussianConsole() {
 #ifdef _WIN32
     SetConsoleCP(CP_UTF8);
@@ -25,9 +22,6 @@ void setupRussianConsole() {
 #endif
 }
 
-/// <summary>
-/// очистка содержимого консоли
-/// </summary>
 void clearConsole() {
 #ifdef _WIN32
     std::system("cls");
@@ -36,9 +30,6 @@ void clearConsole() {
 #endif
 }
 
-/// <summary>
-/// вывод сообщения для вызова метода очистки
-/// </summary>
 void pauseAndClear() {
     std::cout << "\nНажмите Enter, чтобы продолжить...";
     std::string line;
@@ -46,29 +37,29 @@ void pauseAndClear() {
     clearConsole();
 }
 
-/// <summary>
-/// чтение числового значения с проверкой на корректность ввода
-/// </summary>
-/// <typeparam name="T">Тип значения</typeparam>
-/// <param name="value">Ссылка на переменную для хранения прочитанного значения</param>
-/// <param name="name">Имя переменной для вывода сообщений об ошибке</param>
-/// <returns>True, если значение было успешно прочитано, false в противном случае</returns>
 template <typename T>
 bool readNumber(T& value, const char* name) {
+    
     std::string line;
+
     if (!std::getline(std::cin, line)) {
+
         std::cin.clear();
         std::cout << "Ошибка: не удалось прочитать " << name << ".\n";
         return false;
     }
     if (line.empty()) {
+
         std::cout << "Ошибка: величина " << name << " должна быть числом.\n";
         return false;
     }
+
     std::stringstream stream(line);
     T temp{};
     char extra{};
+
     if (!(stream >> temp) || (stream >> extra)) {
+
         std::cout << "Ошибка: величина " << name << " должна быть корректным числом.\n";
         return false;
     }
@@ -76,129 +67,87 @@ bool readNumber(T& value, const char* name) {
     return true;
 }
 
-/// <summary>
-/// чтение целого числа в заданном диапазоне с проверкой на корректность ввода
-/// </summary>
-/// <param name="value">Ссылка на переменную для хранения прочитанного значения</param>
-/// <param name="name">Имя переменной для вывода сообщений об ошибке</param>
-/// <param name="minValue">Минимальное допустимое значение</param>
-/// <param name="maxValue">Максимальное допустимое значение</param>
-/// <returns>True, если значение было успешно прочитано, false в противном случае</returns>
 bool readIntInRange(int& value, const char* name, int minValue, int maxValue) {
-    if (!readNumber(value, name)) return false;
+    if (!readNumber(value, name)) {
+        return false;
+    }
+
     if (value < minValue || value > maxValue) {
-        std::cout << "Ошибка: " << name << " должно быть в диапазоне от " << minValue << " до " << maxValue << ".\n";
+        std::cout << "Ошибка: " << name 
+            << " должно быть в диапазоне от " 
+            << minValue << " до " << maxValue << ".\n";
         return false;
     }
     return true;
 }
 
-/// <summary>
-/// чтение неотрицательного целого числа с проверкой на корректность ввода
-/// </summary>
-/// <param name="value">Ссылка на переменную для хранения прочитанного значения</param>
-/// <param name="name">Имя переменной для вывода сообщений об ошибке</param>
-/// <returns>True, если значение было успешно прочитано, false в противном случае</returns>
 bool readNonNegativeInt(int& value, const char* name) {
     return readIntInRange(value, name, 0, INT_MAX);
 }
 
-/// <summary>
-/// чтение для положительного целого числа с проверкой на корректность ввода
-/// </summary>
-/// <param name="value">Ссылка на переменную для хранения прочитанного значения</param>
-/// <param name="name">Имя переменной для вывода сообщений об ошибке</param>
-/// <returns>True, если значение было успешно прочитано, false в противном случае</returns>
 bool readPositiveInt(int& value, const char* name) {
+
     return readIntInRange(value, name, 1, INT_MAX);
 }
 
-/// <summary>
-/// чтение строки с проверкой на пустоту и длину
-/// </summary>
-/// <param name="value">Ссылка на переменную для хранения прочитанного значения</param>
-/// <param name="name">Имя переменной для вывода сообщений об ошибке</param>
-/// <param name="maxLength">Максимальная допустимая длина строки</param>
-/// <returns>True, если значение было успешно прочитано, false в противном случае</returns>
 bool readRequiredString(std::string& value, const char* name, std::size_t maxLength = 100) {
     if (!std::getline(std::cin, value)) {
+
         std::cin.clear();
         std::cout << "Ошибка: не удалось прочитать " << name << ".\n";
+
         return false;
     }
     if (value.find_first_not_of(" \t\r\n") == std::string::npos) {
+
         std::cout << "Ошибка: " << name << " не может быть пустым.\n";
+
         return false;
     }
     if (value.size() > maxLength) {
+
         std::cout << "Ошибка: " << name << " не может содержать больше " << maxLength << " символов.\n";
+
         return false;
     }
     return true;
 }
 
-/// <summary>
-/// перечисление для классов героев
-/// </summary>
 enum HeroClass { Warrior, Mage, Healer };
 
-/// <summary>
-/// перечисление для типов предметов
-/// </summary>
 enum ItemType { Weapon, Armor, Potion };
 
-/// <summary>
-/// перечисление для статусов героя
-/// </summary>
 enum StatusEffect { None, Blessed, Cursed, Poisoned };
 
-/// <summary>
-/// структура для хранения статусов героя
-/// </summary>
 struct StatusFlags {
     unsigned int blessed : 1;
     unsigned int cursed : 1;
     unsigned int poisoned : 1;
 };
 
-/// <summary>
-/// структура для хранения характеристик оружия
-/// </summary>
 struct WeaponStats {
     int damage;
     int durability;
     bool twoHanded;
 };
 
-/// <summary>
-/// структура для хранения характеристик брони
-/// </summary>
 struct ArmorStats {
     int defense;
     int durability;
     bool magical;
 };
 
-/// <summary>
-/// структура для хранения характеристик зелья
-/// </summary>
 struct PotionStats {
     int healAmount;
     int manaAmount;
 };
 
-/// <summary>
-/// структура для хранения характеристик предмета, использующая union для экономии памяти
-/// </summary>
 union ItemProperties {
     WeaponStats weapon;
     ArmorStats armor;
     PotionStats potion;
 };
 
-/// <summary>
-/// структура для хранения информации о предмете
-/// </summary>
 struct Item {
     std::string name;
     ItemType type;
@@ -207,9 +156,6 @@ struct Item {
     ItemProperties props;
 };
 
-/// <summary>
-/// структура для хранения информации о герое
-/// </summary>
 struct Hero {
     std::string name;
     HeroClass heroClass;
@@ -223,44 +169,48 @@ struct Hero {
     int equippedCount = 0;
 };
 
-/// <summary>
-/// структура для хранения информации о враге
-/// </summary>
 struct Enemy {
     std::string name;
     int hp;
     int damage;
 };
 
-/// <summary>
-/// вывод статусов героя в консоль
-/// </summary>
-/// <param name="status">Структура с флагами статусов</param>
 void printStatusFlags(const StatusFlags& status) {
-    
+
     bool hasStatus = false;
 
     if (status.blessed) {
-        std::cout << "Благословлен";
+
+        std::cout << "Благословен";
         hasStatus = true;
     }
-    else if (status.cursed) {
+
+    if (status.cursed) {
+
+        if (hasStatus) {
+            std::cout << ", ";
+        }
+
         std::cout << "Проклят";
         hasStatus = true;
     }
-    else if (status.poisoned) { 
+
+    if (status.poisoned) {
+
+        if (hasStatus) {
+            std::cout << ", ";
+        }
+
         std::cout << "Отравлен";
-        hasStatus = true; 
+        hasStatus = true;
     }
-    else {
+
+    if (!hasStatus) {
         std::cout << "[пусто]";
     }
 }
 
-/// <summary>
-/// Главная функция
-/// <summary>
-/// <returns>успех или неудача</returns>
+
 int main() {
 
     setupRussianConsole();
@@ -274,42 +224,136 @@ int main() {
 	Enemy* enemies = nullptr;
     int enemyCount = 0;
 
-	/// базовые предметы для демонстрации
-    inventory[0] = { "Стальной меч", Weapon, 5, 100, {20, 50, false} };
-    inventory[1] = { "Кольчуга", Armor, 12, 180, {10, 60, false} };
-    inventory[2] = { "Большое зелье", Potion, 2, 70, {30, 20} };
+    // Оружие
+    inventory[0].name = "Стальной меч";
+    inventory[0].type = Weapon;
+    inventory[0].weight = 5;
+    inventory[0].value = 100;
+    inventory[0].props.weapon = { 20, 50, false };
 
-	///базовые герои для демонстрации
+    inventory[1].name = "Боевой топор";
+    inventory[1].type = Weapon;
+    inventory[1].weight = 9;
+    inventory[1].value = 150;
+    inventory[1].props.weapon = { 30, 45, true };
+
+    inventory[2].name = "Посох мистика";
+    inventory[2].type = Weapon;
+    inventory[2].weight = 3;
+    inventory[2].value = 220;
+    inventory[2].props.weapon = { 18, 35, false };
+
+    inventory[3].name = "Серебряный кинжал";
+    inventory[3].type = Weapon;
+    inventory[3].weight = 2;
+    inventory[3].value = 130;
+    inventory[3].props.weapon = { 12, 70, false };
+
+    // броня
+    inventory[4].name = "Кольчуга";
+    inventory[4].type = Armor;
+    inventory[4].weight = 12;
+    inventory[4].value = 180;
+    inventory[4].props.armor = { 10, 60, false };
+
+    inventory[5].name = "Башенный щит";
+    inventory[5].type = Armor;
+    inventory[5].weight = 10;
+    inventory[5].value = 200;
+    inventory[5].props.armor = { 18, 80, false };
+
+    inventory[6].name = "Мантия архимага";
+    inventory[6].type = Armor;
+    inventory[6].weight = 4;
+    inventory[6].value = 260;
+    inventory[6].props.armor = { 6, 40, true };
+
+
+    // зелья
+    inventory[7].name = "Большое зелье";
+    inventory[7].type = Potion;
+    inventory[7].weight = 2;
+    inventory[7].value = 70;
+    inventory[7].props.potion = { 30, 20 };
+
+    inventory[8].name = "Малое зелье здоровья";
+    inventory[8].type = Potion;
+    inventory[8].weight = 1;
+    inventory[8].value = 30;
+    inventory[8].props.potion = { 20, 0 };
+
+    inventory[9].name = "Зелье маны";
+    inventory[9].type = Potion;
+    inventory[9].weight = 1;
+    inventory[9].value = 50;
+    inventory[9].props.potion = { 0, 50 };
+
+    inventory[10].name = "Эликсир восстановления";
+    inventory[10].type = Potion;
+    inventory[10].weight = 2;
+    inventory[10].value = 120;
+    inventory[10].props.potion = { 35, 35 };
+
+    // Артурчик
     Hero warrior{};
+
     warrior.name = "Артур";
     warrior.heroClass = Warrior;
     warrior.level = 2;
-    warrior.maxHp = 140; warrior.currentHP = 140;
-    warrior.maxMp = 14; warrior.currentMP = 14;
+
+    warrior.maxHp = 100 + warrior.level * 20;
+    warrior.currentHP = warrior.maxHp;
+
+    warrior.maxMp = 10 + warrior.level * 2;
+    warrior.currentMP = warrior.maxMp;
+
     warrior.status = { 1, 0, 0 };
+
     warrior.equipment = new Item[EquipmentSize]{};
     warrior.equippedCount = 2;
+
     warrior.equipment[0] = inventory[0];
+    inventory[0] = Item{};
+
     warrior.equipment[1] = inventory[1];
-    inventory[0].name = ""; inventory[1].name = "";
+    inventory[1] = Item{};
+
     heroes.push_back(warrior);
 
+    // Мирочка
     Hero mage{};
+
     mage.name = "Мира";
     mage.heroClass = Mage;
     mage.level = 2;
-    mage.maxHp = 66; mage.currentHP = 66;
-    mage.maxMp = 150; mage.currentMP = 150;
+
+    mage.maxHp = 50 + mage.level * 8;
+    mage.currentHP = mage.maxHp;
+
+    mage.maxMp = 100 + mage.level * 25;
+    mage.currentMP = mage.maxMp;
+
     mage.status = { 0, 0, 1 };
+
     mage.equipment = new Item[EquipmentSize]{};
-    mage.equippedCount = 0;
+    mage.equippedCount = 2;
+
+    mage.equipment[0] = inventory[4];
+    inventory[4] = Item{};
+
+    mage.equipment[3] = inventory[2];
+    inventory[2] = Item{};
+
     heroes.push_back(mage);
 
-	///базовые враги для демонстрации
+    // хтонь
     enemyCount = 2;
     enemies = new Enemy[enemyCount];
+
     enemies[0] = { "Гоблин", 100, 15 };
     enemies[1] = { "Орк", 150, 20 };
+	enemies[2] = { "Дракон", 300, 40 };
+	enemies[3] = { "Тролль", 200, 25 };
 
     bool running = true;
 
@@ -339,7 +383,6 @@ int main() {
 
         switch (mainChoice) {
         
-        ///управление отрядом
 		case 1: {
 
             bool back = false;
@@ -359,69 +402,124 @@ int main() {
                     continue; 
                 }
 
-                ///добавление новых героев
                 if (choice == 1) {
 
                     Hero hero{};
 
-                    std::cout << "Введите имя героя: ";
-                    if (!readRequiredString(hero.name, "имя героя")) 
-                        break;
+                    while (true) {
+                        std::cout << "Введите имя героя: ";
+
+                        if (readRequiredString(hero.name, "имя героя")) {
+                            break;
+                        }
+
+                        std::cout << "Попробуйте ещё раз.\n";
+                    }
 
                     int classChoice = 0;
-                    std::cout << "Выберите класс" 
-                        << " (1 - боец, 2 - маг, 3 - целитель): ";
-                    if (!readIntInRange(classChoice, "класс", 1, 3)) 
+
+                    while (true) {
+                        std::cout << "Выберите класс"
+                            << " (1 - боец, 2 - маг, 3 - целитель): ";
+
+                        if (readIntInRange(classChoice, "класс", 1, 3)) {
+                            break;
+                        }
+
+                        std::cout << "Попробуйте ещё раз.\n";
+                    }
+
+                    hero.heroClass =
+                        static_cast<HeroClass>(classChoice - 1);
+
+                    long long maxHp = 0;
+                    long long maxMp = 0;
+
+                    while (true) {
+                        std::cout << "Введите уровень героя: ";
+
+                        if (!readPositiveInt(hero.level, "уровень")) {
+                            std::cout << "Попробуйте ещё раз.\n";
+                            continue;
+                        }
+
+                        if (hero.heroClass == Warrior) {
+                            maxHp = 100LL + hero.level * 20LL;
+                            maxMp = 10LL + hero.level * 2LL;
+                        }
+                        else if (hero.heroClass == Mage) {
+                            maxHp = 50LL + hero.level * 8LL;
+                            maxMp = 100LL + hero.level * 25LL;
+                        }
+                        else {
+                            maxHp = 60LL + hero.level * 10LL;
+                            maxMp = 80LL + hero.level * 20LL;
+                        }
+
+                        if (maxHp > INT_MAX || maxMp > INT_MAX) {
+                            std::cout
+                                << "Ошибка: такой уровень слишком большой "
+                                << "для хранения характеристик героя.\n"
+                                << "Введите меньший уровень.\n";
+
+                            continue;
+                        }
+
                         break;
-
-                    hero.heroClass = static_cast<HeroClass>(classChoice - 1);
-
-                    std::cout << "Введите уровень героя: ";
-                    if (!readPositiveInt(hero.level, "уровень")) 
-                        break;
-
-                    long long maxHp = 0, maxMp = 0;
-
-                    if (hero.heroClass == Warrior) { 
-                        maxHp = 100LL + hero.level * 20LL; 
-                        maxMp = 10LL + hero.level * 2LL; 
-                    }
-                    else if (hero.heroClass == Mage) { 
-                        maxHp = 50LL + hero.level * 8LL; 
-                        maxMp = 100LL + hero.level * 25LL; 
-                    }
-                    else { 
-                        maxHp = 60LL + hero.level * 10LL; 
-                        maxMp = 80LL + hero.level * 20LL; 
                     }
 
-                    hero.maxHp = static_cast<int>(maxHp); 
+                    hero.maxHp = static_cast<int>(maxHp);
                     hero.maxMp = static_cast<int>(maxMp);
-                    hero.currentHP = hero.maxHp; hero.currentMP = hero.maxMp;
+
+                    hero.currentHP = hero.maxHp;
+                    hero.currentMP = hero.maxMp;
 
                     int statusChoice = 0;
 
-                    std::cout << "Выберите особенность " 
-                        << "(0 - отсутствует, 1 - благословлен, 2 - проклят, 3 - отравлен): ";
+                    while (true) {
+                        std::cout << "Выберите особенность"
+                            << " (0 - отсутствует, 1 - благословлен,"
+                            << " 2 - проклят, 3 - отравлен): ";
 
-                    if (!readIntInRange(statusChoice, "статус", 0, 3)) break;
+                        if (readIntInRange(statusChoice, "статус", 0, 3)) {
+                            break;
+                        }
+
+                        std::cout << "Попробуйте ещё раз.\n";
+                    }
 
                     hero.status = { 0, 0, 0 };
 
-                    if (statusChoice == 1) 
+                    StatusEffect selectedEffect = static_cast<StatusEffect>(statusChoice);
+
+                    switch (selectedEffect) {
+
+                    case None:
+                        break;
+
+                    case Blessed:
                         hero.status.blessed = 1;
-                    else if (statusChoice == 2) 
+                        break;
+
+                    case Cursed:
                         hero.status.cursed = 1;
-                    else if (statusChoice == 3) 
+                        break;
+
+                    case Poisoned:
                         hero.status.poisoned = 1;
+                        break;
+                    }
 
                     hero.equipment = new Item[EquipmentSize]{};
+                    hero.equippedCount = 0;
 
                     heroes.push_back(hero);
 
-                    std::cout << "Герой добавлен. Индекс: " << heroes.size() - 1 << "\n";
+                    std::cout << "Герой добавлен. Индекс: "
+                        << heroes.size() - 1
+                        << "\n";
                 }
-				else if (choice == 2) { ///удаление героя
+				else if (choice == 2) {
                     
                     if (heroes.empty()) { 
                         std::cout << "Отряд пуст.\n"; 
@@ -480,7 +578,7 @@ int main() {
             clearConsole();
             break;
         }
-        case 2: { /// инвентарь
+        case 2: {
 
             bool back = false;
 
@@ -497,7 +595,7 @@ int main() {
                     pauseAndClear(); 
                     continue; 
                 }
-                if (choice == 1) { ///добавление
+                if (choice == 1) {
 
                     int freeIndex = -1;
 
@@ -578,7 +676,7 @@ int main() {
 
                     std::cout << "Предмет добавлен в слот " << freeIndex << ".\n";
                 }
-                else if (choice == 2) { ///удаление
+                else if (choice == 2) {
 
                     int index = 0;
 
@@ -625,7 +723,7 @@ int main() {
             clearConsole();
             break;
         }
-        case 3: { /// экипировка
+        case 3: {
 
             bool back = false;
 
@@ -752,7 +850,7 @@ int main() {
             clearConsole();
             break;
         }
-        case 4: { /// враги
+        case 4: {
             bool back = false;
 
             while (!back) {
@@ -861,7 +959,7 @@ int main() {
             clearConsole();
             break;
         }
-        case 5: { /// симуляция сражения
+        case 5: {
 
             if (heroes.empty() || enemyCount == 0) { 
 
@@ -871,6 +969,55 @@ int main() {
             }
 
             int turn = 1;
+
+            std::cout << "\n『 ГЕРОИ 』\n";
+
+            for (size_t i = 0; i < heroes.size(); ++i) {
+
+                std::cout << "[" << i << "] "
+                    << heroes[i].name
+                    << " | ";
+
+                if (heroes[i].heroClass == Warrior) {
+                    std::cout << "Warrior";
+                }
+                else if (heroes[i].heroClass == Mage) {
+                    std::cout << "Mage";
+                }
+                else if (heroes[i].heroClass == Healer) {
+                    std::cout << "Healer";
+                }
+
+                std::cout
+                    << " | Ур. " << heroes[i].level
+                    << " | HP: "
+                    << heroes[i].currentHP
+                    << "/" << heroes[i].maxHp
+                    << " | MP: "
+                    << heroes[i].currentMP
+                    << "/" << heroes[i].maxMp
+                    << " | Статусы: ";
+
+                printStatusFlags(heroes[i].status);
+
+                std::cout << "\n";
+            }
+
+            std::cout << "\n『 ВРАГИ 』\n";
+
+            for (int i = 0; i < enemyCount; ++i) {
+
+                std::cout
+                    << "[" << i << "] "
+                    << enemies[i].name
+                    << " | HP: "
+                    << enemies[i].hp
+                    << " | Урон: "
+                    << enemies[i].damage
+                    << "\n";
+            }
+
+            std::cout << "РЕЗНЯЯЯЯ!\n";
 
             while (true) {
 
@@ -1108,13 +1255,42 @@ int main() {
 
                 std::cout << "\n『 СОСТОЯНИЕ ПОСЛЕ ХОДА 』\n";
 
+                std::cout << "\nГерои:\n";
+
                 for (size_t i = 0; i < heroes.size(); ++i) {
 
-                    std::cout << "[" << i << "] " << heroes[i].name 
-                        << " | " << (heroes[i].currentHP > 0 ? "жив" : "мёртв")
-                        << " | HP " << heroes[i].currentHP << "/" << heroes[i].maxHp 
-                        << " | MP " << heroes[i].currentMP << "/" << heroes[i].maxMp << "\n";
+                    std::cout
+                        << "[" << i << "] "
+                        << heroes[i].name
+                        << " | "
+                        << (heroes[i].currentHP > 0 ? "жив" : "мёртв")
+                        << " | HP: "
+                        << heroes[i].currentHP
+                        << "/" << heroes[i].maxHp
+                        << " | MP: "
+                        << heroes[i].currentMP
+                        << "/" << heroes[i].maxMp
+                        << " | Статусы: ";
+
+                    printStatusFlags(heroes[i].status);
+
+                    std::cout << "\n";
                 }
+
+                std::cout << "\nВраги:\n";
+
+                for (int i = 0; i < enemyCount; ++i) {
+
+                    std::cout
+                        << "[" << i << "] "
+                        << enemies[i].name
+                        << " | "
+                        << (enemies[i].hp > 0 ? "жив" : "мёртв")
+                        << " | HP: "
+                        << enemies[i].hp
+                        << "\n";
+                }
+
                 ++turn;
             }
 
@@ -1149,7 +1325,7 @@ int main() {
             pauseAndClear();
             break;
         }
-        case 6: { /// сводка по отряду
+        case 6: {
 
             std::cout << "\n『 СВОДКА ПО ОТРЯДУ 』\n";
 
@@ -1237,7 +1413,6 @@ int main() {
         }
     }
 
-	/// очистка памяти перед выходом
     for (auto& hero : heroes) {
         delete[] hero.equipment;
         hero.equipment = nullptr;
