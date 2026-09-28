@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <clocale>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -346,12 +348,38 @@ int main() {
 
     heroes.push_back(mage);
 
+    // Элианочка
+    Hero healer{};
+
+    healer.name = "Элиана";
+    healer.heroClass = Healer;
+    healer.level = 2;
+
+    healer.maxHp = 60 + healer.level * 10;
+    healer.currentHP = healer.maxHp;
+
+    healer.maxMp = 80 + healer.level * 20;
+    healer.currentMP = healer.maxMp;
+
+    healer.status = { 0, 0, 0 };
+
+    healer.equipment = new Item[EquipmentSize]{};
+    healer.equippedCount = 2;
+
+    healer.equipment[0] = inventory[3];
+    inventory[3] = Item{};
+
+    healer.equipment[3] = inventory[7];
+    inventory[7] = Item{};
+
+    heroes.push_back(healer);
+
     // хтонь
     enemyCount = 4;
     enemies = new Enemy[enemyCount];
 
     enemies[0] = { "Гоблин", 100, 15 };
-    enemies[1] = { "Орк", 150, 20 };
+    enemies[1] = { "Орк с 4chan", 150, 20 };
 	enemies[2] = { "Дракон", 300, 40 };
 	enemies[3] = { "Тролль", 200, 25 };
 
@@ -698,20 +726,57 @@ int main() {
                     std::cout << "\n『 ИНВЕНТАРЬ 』\n";
 
                     for (int i = 0; i < InventorySize; ++i) {
-                        
-                        if (inventory[i].name.empty()) { 
-                            std::cout << "[" << i << "] пусто\n"; 
+
+                        if (inventory[i].name.empty()) {
+                            std::cout << "[" << i << "] пусто\n";
                             continue;
                         }
-                        std::cout << "[" << i << "] " << inventory[i].name << " | ";
 
-                        if (inventory[i].type == Weapon) 
-                            std::cout << "Оружие | урон: " << inventory[i].props.weapon.damage;
-                        else if (inventory[i].type == Armor) 
-                            std::cout << "Защита | стойкость: " << inventory[i].props.armor.defense;
-                        else 
-                            std::cout << "Зелье | лечение: " << inventory[i].props.potion.healAmount;
-                        std::cout << "\n";
+                        std::cout << "\n[" << i << "] "
+                            << "Название: " << inventory[i].name << "\n";
+
+                        std::cout << "    Тип: ";
+
+                        if (inventory[i].type == Weapon) {
+                            std::cout << "Weapon\n";
+                        }
+                        else if (inventory[i].type == Armor) {
+                            std::cout << "Armor\n";
+                        }
+                        else {
+                            std::cout << "Potion\n";
+                        }
+
+                        std::cout << "    Вес: " << inventory[i].weight << "\n";
+                        std::cout << "    Стоимость: " << inventory[i].value << "\n";
+
+                        switch (inventory[i].type) {
+
+                        case Weapon:
+                            std::cout << "    Урон: "
+                                << inventory[i].props.weapon.damage << "\n";
+                            std::cout << "    Прочность: "
+                                << inventory[i].props.weapon.durability << "\n";
+                            std::cout << "    Двуручное: "
+                                << (inventory[i].props.weapon.twoHanded ? "да" : "нет") << "\n";
+                            break;
+
+                        case Armor:
+                            std::cout << "    Защита: "
+                                << inventory[i].props.armor.defense << "\n";
+                            std::cout << "    Прочность: "
+                                << inventory[i].props.armor.durability << "\n";
+                            std::cout << "    Магическое: "
+                                << (inventory[i].props.armor.magical ? "да" : "нет") << "\n";
+                            break;
+
+                        case Potion:
+                            std::cout << "    Лечение HP: "
+                                << inventory[i].props.potion.healAmount << "\n";
+                            std::cout << "    Восстановление MP: "
+                                << inventory[i].props.potion.manaAmount << "\n";
+                            break;
+                        }
                     }
                 }
                 else { 
@@ -1100,20 +1165,31 @@ int main() {
 
                             std::cout << "Зелье использовано.\n";
                         }
+                        else {
+							std::cout << "Зелье не использовано.\n";
+                        }
                     }
-
-                    int useAbility = 0;
-
-                    std::cout << "Использовать способность? (1 - да, 0 - нет): ";
-
-                    if (!readIntInRange(useAbility, "способность", 0, 1)) 
-                        continue;
 
                     int abilityCost = (hero.heroClass == Warrior) ? 20 : 40;
 
-                    bool canAbility = (useAbility == 1 && hero.currentMP >= abilityCost);
+                    bool canAbility = false;
 
-                    if (useAbility == 1 && !canAbility) std::cout << "Недостаточно маны.\n";
+                    if (hero.currentMP >= abilityCost) {
+
+                        int useAbility = 0;
+
+                        std::cout << "Использовать способность? (1 - да, 0 - нет): ";
+
+                        if (!readIntInRange(useAbility, "способность", 0, 1))
+                            continue;
+
+                        if (useAbility == 1) {
+                            canAbility = true;
+                        }
+                    }
+                    else {
+                        std::cout << "Недостаточно маны. Выполняется обычная атака.\n";
+                    }
 
                     int weaponDmg = 0;
 
